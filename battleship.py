@@ -3,6 +3,15 @@
 """
 import os
 import keyboard
+import curses 
+
+
+def clear_terminal():
+    if os.name == 'posix':  # for Mac and Linux
+        os.system('clear')
+    elif os.name == 'nt':  # for Windows
+        os.system('cls')
+
 
 # class Singleplayer:
 
@@ -29,93 +38,76 @@ class Game:
         self.current_pos = [1, 1]
         self.current_boat = 0
         self.direction = "horizontal"
+        self.value_matrix = [[0 for _ in range(11)] for _ in range(11)]
+        self.move_matrix = [[0 for _ in range(11)] for _ in range(11)]
+        self.move_matrix[1][1] = 3
 
-    def setup_boats(self):
+    def update_position(self, new_pos):
         boat_lengths = [5, 4, 3, 2]
-        prev_pos = None
-        prev_color = None
         length = 5
-        self.board.color_position(self.current_pos, length, self.direction)
+        self.board.color_matrix_positions(self.move_matrix, self.value_matrix)
+        self.board.print_single_board()
+        x, y = new_pos
+        if x < 1 or x >= 11 or y < 1 or y >= 11:
+            return
+        self.move_matrix[self.current_pos[0]][self.current_pos[1]] = 0  # reset the current position to 0
+        self.move_matrix[x][y] = 3  # update the new position
+        self.current_pos = new_pos
+        clear_terminal()
+        self.board.color_matrix_positions(self.move_matrix, self.value_matrix)
         self.board.print_single_board()
 
-        for i, length in enumerate(boat_lengths):
-            for j in range(1, 6 - i):
-                self.board.print_single_board()
-                while True:
-                    event = keyboard.read_event()
-                    if event.event_type == 'down':
-                        key = event.name
-                        if key == "enter":
-                            if self.current_boat < 4:
-                                if self.board.check_valid_position(self.current_pos, length, self.direction):
-                                    self.board.place_boat(
-                                        self.current_pos, length, self.direction)
-                                    prev_pos = None
-                                    prev_color = None
-                                    self.current_boat += 1
-                                    break
-                                else:
-                                    print("Invalid position. Try again.")
-                            else:
-                                print("All boats placed.")
-                                return
-                        elif key == "shift":
-                            if self.direction == "horizontal":
-                                self.direction = "vertical"
-                                self.board.color_position(
-                                    self.current_pos, length, self.direction)
-                                self.board.print_single_board()
-                            else:
-                                self.direction = "horizontal"
-                                self.board.color_position(
-                                    self.current_pos, length, self.direction)
-                                self.board.print_single_board()
-                        elif key == "tab":
-                            self.current_boat = (self.current_boat + 1) % 4
-                        elif key == "esc":
-                            self.board.clear_board()
-                            self.current_boat = 0
-                            self.current_pos = [0, 0]
-                            self.direction = "horizontal"
-                            prev_pos = None
-                            prev_color = None
-                            break
-                        elif key == "up":
-                            if self.current_pos[0] > 0:
-                                self.board.color_position(prev_pos, length, self.direction, prev_color)
-                                prev_pos, prev_color = self.current_pos.copy(), self.board.color_position(self.current_pos, length, self.direction)
-                                self.current_pos[0] -= 1
-                                self.board.print_single_board()
-                        elif key == "down":
-                            if self.current_pos[0] < 9 - length + 1:
-                                if prev_pos is not None and prev_color is not None:
-                                    self.board.color_position(
-                                        prev_pos, length, self.direction, prev_color)
-                                prev_pos, prev_color = self.current_pos.copy(), self.board.color_position(
-                                    self.current_pos, length, self.direction)
-                                self.current_pos[0] += 1
-                                self.board.print_single_board()
-                        elif key == "left":
-                            if self.current_pos[1] > 0:
-                                if prev_pos is not None and prev_color is not None:
-                                    self.board.color_position(
-                                        prev_pos, length, self.direction, prev_color)
-                                prev_pos, prev_color = self.current_pos.copy(), self.board.color_position(
-                                    self.current_pos, length, self.direction)
-                                self.current_pos[1] -= 1
-                                self.board.print_single_board()
-                        elif key == "right":
-                            if self.current_pos[1] < 9 - length + 1:
-                                if prev_pos is not None and prev_color is not None:
-                                    self.board.color_position(
-                                        prev_pos, length, self.direction, prev_color)
-                                prev_pos, prev_color = self.current_pos.copy(), self.board.color_position(
-                                    self.current_pos, length, self.direction)
-                                self.current_pos[1] += 1
-                                self.board.print_single_board()
+    def change_value(self):
+        self.value_matrix
+        x, y = self.current_pos
+        print(x, y)
+        self.value_matrix[x][y] = 2
+        if x > 2 and x < 10 and y > 2 and y < 10:
+            self.value_matrix[x-1][y+1] = 1
+        if x > 1 and x < 11 and y > 2 and y < 10:
+            self.value_matrix[x][y+1] = 1
+        if x > 2 and x < 10 and y > 2 and y < 10:
+            self.value_matrix[x+1][y+1] = 1
+        if x > 2 and x < 10 and y > 1 and y < 11:
+            self.value_matrix[x+1][y] = 1
+        if x > 2 and x < 10 and y > 1 and y < 11:
+            self.value_matrix[x+1][y-1] = 1
+        if x > 2 and x < 10 and y > 2 and y < 10:
+            self.value_matrix[x][y-1] = 1
+        if x > 1 and x < 11 and y > 2 and y < 10:
+            self.value_matrix[x-1][y-1] = 1
+        if x > 2 and x < 10 and y > 1 and y < 11:
+            self.value_matrix[x-1][y] = 1
+        clear_terminal()
+        self.board.color_matrix_positions(self.move_matrix, self.value_matrix)
+        self.board.print_single_board()
+        print(self.value_matrix)
 
-                        else:
-                            print("Invalid key. Try again.")
+
+        
+    def setup_boats(self):
+        self.board.color_matrix_positions(self.move_matrix, self.value_matrix)
+        self.board.print_single_board()
+        while True:
+            event = keyboard.read_event()
+            if event.event_type == 'down':
+                if event.name == 'up':
+                    self.update_position((self.current_pos[0]-1, self.current_pos[1]))
+                elif event.name == 'down':
+                    self.update_position((self.current_pos[0]+1, self.current_pos[1]))
+                elif event.name == 'left':
+                    self.update_position((self.current_pos[0], self.current_pos[1]-1))
+                elif event.name == 'right':
+                    self.update_position((self.current_pos[0], self.current_pos[1]+1))
+                elif event.name == 'enter':
+                    self.change_value()
+                elif event.name == 'shift':
+                    if self.direction == "horizontal":
+                        self.direction = "vertical"
+                    else:
+                        self.direction = "horizontal"
+                elif event.name == 'esc':
+                    break  # exit the loop if the 'esc' key is pressed
 
     def start_new_singleplayer_game(self):
         # Code to start a new single player game goes here
@@ -189,7 +181,7 @@ class MainMenu:
         while True:
             choice = input("Enter 'b' to go back to the main menu: ")
             if choice.lower() == 'b':
-                os.system('clear')
+                clear_terminal()
                 return  # Return from the function to go back to the main menu
             else:
                 print("Invalid choice. Please enter 'b' to go back to the main menu.")
@@ -199,7 +191,7 @@ class MainMenu:
             self.display()
             selection = self.select_option()
             if selection == 1:
-                os.system('clear')
+                clear_terminal()
                 sub_selection = self.single_player_menu()
                 if sub_selection == '1':
                     print('Starting new single player game.')
@@ -210,10 +202,10 @@ class MainMenu:
                     game = Game()
                     game.load_singleplayer_game()
                 elif sub_selection == '3':
-                    os.system('clear')
+                    clear_terminal()
 
             elif selection == 2:
-                os.system('clear')
+                clear_terminal()
                 sub_selection = self.multiplayer_menu()
                 if sub_selection == '1':
                     print('Starting new multiplayer game.')
@@ -224,13 +216,13 @@ class MainMenu:
                     game = Game()
                     game.load_multiplayer_game()
                 elif sub_selection == '3':
-                    os.system('clear')
+                    clear_terminal()
             elif selection == 3:
-                os.system('clear')
+                clear_terminal()
                 self.leaderboard()
             elif selection == 4:
                 print('Exiting game...')
-                os.system('clear')
+                clear_terminal()
                 return
 
 
@@ -242,6 +234,7 @@ class Board:
     def __init__(self):
         self.board1 = [[' ' for i in range(13)] for j in range(12)]
         self.board2 = [[' ' for i in range(13)] for j in range(12)]
+        self.display_matrix = [[0 for _ in range(11)] for _ in range(11)]
         self.color_blue = '\u001b[94;106m'
         self.color_grey = '\u001b[100m'
         self.add_column_labels()
@@ -278,13 +271,28 @@ class Board:
                                         ] = f'{color}   \u001b[0m |'  # change color to grey
         return color
     
-    def color_matrix_positions(self, matrix, grey='\u001b[100m', blue='\u001b[94;106m'):
+    def color_matrix_positions(self, move_matrix, value_matrix, grey='\u001b[100m', blue='\u001b[94;106m', red='\u001b[101m', green='\u001b[102m' ):
+        
         for i in range(1, 11):
             for j in range(1, 11):
-                if matrix[i-1][j-1] == 2:
-                    self.board1[i][j] = f'{grey}   \u001b[0m |'
+                if move_matrix[i][j] == 3:
+                    if value_matrix[i][j] == 0:
+                        self.display_matrix[i][j] = 3
+                    else: 
+                        self.display_matrix[i][j] = 4
                 else:
+                    self.display_matrix[i][j] = value_matrix[i][j]
+        for i in range(1, 11):
+            for j in range(1,11):
+                if self.display_matrix[i][j] == 0 or self.display_matrix[i][j] == 1:
                     self.board1[i][j] = f'{blue} ~ \u001b[0m |'
+                elif self.display_matrix[i][j] == 2:
+                    self.board1[i][j] = f'{grey}   \u001b[0m |'
+                elif self.display_matrix[i][j] == 3:
+                    self.board1[i][j] = f'{green}   \u001b[0m |'
+                elif self.display_matrix[i][j] == 4:
+                    self.board1[i][j] = f'{red}   \u001b[0m |'
+
 
 
     def print_single_board(self):
@@ -318,7 +326,7 @@ class Board:
                 boat_list_display += str(self.num_boats[i]
                                          ) + 'x ' + boat + ', '
         board_display += '\n' + boat_list_display + '\n'
-        os.system('clear')
+        clear_terminal()
         print(board_display)
 
 
@@ -326,7 +334,7 @@ class Board:
     def print_double_board(self):
         for i, (row1, row2) in enumerate(zip(self.board1, self.board2)):
             if i == 0:
-                os.system('clear')
+                clear_terminal()
                 print(' \n ')
                 print(' ' * 8 + 'Player 1'.center(50) +
                       ' ' * 24 + 'Player 2'.center(50))
