@@ -2,8 +2,9 @@
     Code Description
 """
 import os
+import random
 import keyboard
-import curses 
+
 
 
 def clear_terminal():
@@ -91,21 +92,27 @@ class Game:
         while True:
             event = keyboard.read_event()
             if event.event_type == 'down':
-                if event.name == 'up':
+                if event.name == 'up' or event.name == 'nach-oben':
                     self.update_position((self.current_pos[0]-1, self.current_pos[1]))
-                elif event.name == 'down':
+                elif event.name == 'down' or event.name == 'nach-unten':
                     self.update_position((self.current_pos[0]+1, self.current_pos[1]))
-                elif event.name == 'left':
+                elif event.name == 'left' or event.name == 'nach-links':
                     self.update_position((self.current_pos[0], self.current_pos[1]-1))
-                elif event.name == 'right':
+                elif event.name == 'right' or event.name == 'nach-rechts':
                     self.update_position((self.current_pos[0], self.current_pos[1]+1))
                 elif event.name == 'enter':
                     self.change_value()
-                elif event.name == 'shift':
+                elif event.name == 'shift' or event.name == 'umschalt':
                     if self.direction == "horizontal":
                         self.direction = "vertical"
                     else:
                         self.direction = "horizontal"
+                elif event.name == 'r':
+                    board = Board()
+                    self.value_matrix = board.random_boat_setup()
+                    self.board.color_matrix_positions(self.move_matrix, self.value_matrix)
+                    self.board.print_single_board()
+
                 elif event.name == 'esc':
                     break  # exit the loop if the 'esc' key is pressed
 
@@ -235,6 +242,8 @@ class Board:
         self.board1 = [[' ' for i in range(13)] for j in range(12)]
         self.board2 = [[' ' for i in range(13)] for j in range(12)]
         self.display_matrix = [[0 for _ in range(11)] for _ in range(11)]
+        self.random_matrix = [[0 for j in range(11)] for i in range(11)]
+        self.value_matrix = [[0 for j in range(11)] for i in range(11)]
         self.color_blue = '\u001b[94;106m'
         self.color_grey = '\u001b[100m'
         self.add_column_labels()
@@ -259,6 +268,117 @@ class Board:
                 self.board1[i][j] = f'{color} ~ \u001b[0m |'
                 # add light blue background color to box
                 self.board2[i][j] = f'{color} ~ \u001b[0m |'
+
+    def random_boat_setup(self):
+    # Initialize a 10x10 matrix with zeros
+
+        # Define the boat sizes
+        boat_sizes = [5, 4, 4, 3, 3, 3, 2, 2, 2, 2]
+
+        def can_place_boat(matrix, row, col, size, direction):
+            # Check if the boat would go out of bounds
+            if direction == 'horizontal' and col + size > 10:
+                return False
+            elif direction == 'vertical' and row + size > 10:
+                return False
+            # Check if the boat would overlap with another boat
+            for i in range(size+1):
+                if direction == 'horizontal':
+                    if col+i <= 10 and matrix[row][col] == 2:
+                        return False
+                    if col+i <= 10 and matrix[row][col+i] == 2:
+                        return False
+                    if col+i > 0 and matrix[row][col-1] == 2:
+                        return False
+                elif direction == 'vertical':
+                    if row+i <= 10 and matrix[row][col] == 2:
+                        return False
+                    if row+i <= 10 and matrix[row+i][col] == 2:
+                        return False
+                    if row+i > 0 and matrix[row-1][col] == 2:
+                        return False
+            # Check if the boat would touch another boat
+            for i in range(size+1):
+                if direction == 'horizontal':
+                    if row-1 > 0 and col+i <= 10 and self.random_matrix[row-1][col+i] == 2:
+                        return False
+                    if row+1 <= 10 and col+i <= 10 and self.random_matrix[row+1][col+i] == 2:
+                        return False
+                    if col-1 > 0 and row-1 > 0 and self.random_matrix[row-1][col-1] == 2:
+                        return False
+                    if col-1 > 0 and row+1 <= 10 and self.random_matrix[row+1][col-1] == 2:
+                        return False
+                elif direction == 'vertical':
+                    if row+i <= 10 and col-1 > 0 and self.random_matrix[row+i][col-1] == 2:
+                        return False
+                    if row+i <= 10 and col+1 <= 10 and self.random_matrix[row+i][col+1] == 2:
+                        return False
+                    if row-1 > 0 and col-1 > 0 and self.random_matrix[row-1][col-1] == 2:
+                        return False
+                    if row-1 > 0 and col+1 <= 10 and self.random_matrix[row-1][col+1] == 2:
+                        return False
+            # If all checks pass, the boat can be placed
+            return True
+        # Place the boats
+        while True:
+            # Remove all boats from the matrix
+            for size in boat_sizes:
+                placed = False
+                while not placed:
+                        row = random.randint(1, 10)
+                        col = random.randint(1, 10)
+                        direction = random.choice(['horizontal', 'vertical'])
+                        if can_place_boat(self.random_matrix, row, col, size, direction):
+                            for i in range(size):
+                                if direction == 'horizontal':
+                                    self.random_matrix[row][col+i] = 2
+                                    if row-1 > 0 and col+i <= 10:
+                                        self.random_matrix[row-1][col+i] = 1 #top line
+                                    if row+1 <= 10 and col+i <= 10:
+                                        self.random_matrix[row+1][col+i] = 1 #bottom line
+                                    if col-1 > 0:
+                                        self.random_matrix[row][col-1] = 1 #left
+                                    if col+size <= 10 and i==1:
+                                        self.random_matrix[row][col+size] = 1 #right
+                                    if col-1 > 0 and row-1 > 0:
+                                        self.random_matrix[row-1][col-1] = 1 #top left
+                                    if col-1 > 0 and row+1 <= 10:
+                                        self.random_matrix[row+1][col-1] = 1 #bottom left
+                                    if col+size <= 10 and row-1 > 0 and i==1:
+                                        self.random_matrix[row-1][col+size] = 1 #top right
+                                    if col+size <= 10 and row+1 <= 10 and i==1:
+                                        self.random_matrix[row+1][col+size] = 1 #bottom right
+                                else:
+                                    self.random_matrix[row+i][col] = 2
+                                    if row+i <= 10 and col+1 <= 10:
+                                        self.random_matrix[row+i][col+1] = 1 #right line
+                                    if row+i <= 10 and col-1 > 0:
+                                        self.random_matrix[row+i][col-1] = 1 #left line
+                                    if row-1 > 0:
+                                        self.random_matrix[row-1][col] = 1 #top
+                                    if row+size <= 10 and i==1:
+                                        self.random_matrix[row+size][col] = 1 #bottom
+                                    if col-1 > 0 and row-1 > 0:
+                                        self.random_matrix[row-1][col-1] = 1 #top left
+                                    if col-1 > 0 and row+size <= 10 and i == 1:
+                                        self.random_matrix[row+size][col-1] = 1 #bottom left
+                                    if col+1 <= 10 and row-1 > 0:
+                                        self.random_matrix[row-1][col+1] = 1 #top right
+                                    if col+1 <= 10 and row+size <= 10 and i==1:
+                                        self.random_matrix[row+size][col+1] = 1 #bottom right
+                            placed = True
+                        else:
+                            # Generate new random position and direction for the boat
+                            row = random.randint(1, 10)
+                            col = random.randint(1, 10)
+                            direction = random.choice(['horizontal', 'vertical'])
+            # Check if all boats were placed and exit loop if so
+            if all([size == sum(row) for row in self.random_matrix] for size in boat_sizes):
+                break
+        return self.random_matrix
+
+
+
 
     # color = grey
     def color_position(self, pos, length, direction, color='\u001b[100m'):
@@ -346,6 +466,7 @@ class Board:
 
 
 # board = Board()
+# board.random_boat_setup()
 # board.print_single_board()
 # board.print_double_board()
 
