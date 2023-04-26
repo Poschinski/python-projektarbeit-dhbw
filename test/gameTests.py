@@ -1,5 +1,5 @@
 import unittest
-from game import GameSetup
+from src.game import GameSetup
 import utilities
 
 
