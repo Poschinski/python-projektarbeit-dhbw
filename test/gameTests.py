@@ -1,9 +1,9 @@
 import unittest
-import utilities
 import sys
 
 sys.path.append("../src")
 
+import utilities
 from game import GameSetup
 
 class GameTests(unittest.TestCase):
