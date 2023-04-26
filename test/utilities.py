@@ -1,5 +1,9 @@
 import os
 import random
+import sys
+
+sys.path.append("../src")
+
 from config import boat_lengths, boat_ammount
 
 

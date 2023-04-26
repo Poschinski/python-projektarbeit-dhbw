@@ -204,6 +204,8 @@ class GameSetup:
 
 
 
-game = GameSetup()
-test = game.setup_boats()
-print(test)
+if __name__ == "__main__":
+    game = GameSetup()
+
+# test = game.setup_boats()
+# print(test)

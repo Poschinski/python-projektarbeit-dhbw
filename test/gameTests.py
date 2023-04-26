@@ -1,7 +1,10 @@
 import unittest
-from src.game import GameSetup
 import utilities
+import sys
 
+sys.path.append("../src")
+
+from game import GameSetup
 
 class GameTests(unittest.TestCase):
     def test_update_position_horizontal_valid(self):
