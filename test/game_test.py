@@ -1,10 +1,10 @@
 import unittest
 import sys
 
-sys.path.append("../src")
+sys.path.append("..")
+from src.game import GameSetup
+import src.utilities as utilities
 
-import utilities
-from game import GameSetup
 
 class GameTests(unittest.TestCase):
     def test_update_position_horizontal_valid(self):
@@ -40,7 +40,15 @@ class GameTests(unittest.TestCase):
         # Test
         self.assertFalse(self.setup.change_value(3, "horizontal"))
 
-    def test_change_value_updates_value_matrix_and_returns_true(self):
+    def test_change_value_returns_false_if_boat_overlap(self):
+        # Set up
+        self.setup.value_matrix[1][1] = 1
+        self.setup.current_pos = [1, 1]
+        self.setup.direction = "vertical"
+        # Test
+        self.assertFalse(self.setup.change_value(3, "vertical"))
+
+    def test_change_value_updates_value_matrix_horizontal(self):
         # Set up
         self.setup.current_pos = [1, 1]
         self.setup.direction = "horizontal"
@@ -61,6 +69,27 @@ class GameTests(unittest.TestCase):
         ]
         self.assertEqual(self.setup.value_matrix, expected_value_matrix)
 
+    def test_change_value_updates_value_matrix_vertical(self):
+        # Set up
+        self.setup.current_pos = [1, 1]
+        self.setup.direction = "vertical"
+        # Test
+        self.assertTrue(self.setup.change_value(3, "vertical"))
+        expected_value_matrix = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        self.assertEqual(self.setup.value_matrix, expected_value_matrix)
+
     def test_reset_boat_setup(self):
         game_setup = GameSetup()
         game_setup.move_matrix[3][3] = 1
@@ -71,7 +100,7 @@ class GameTests(unittest.TestCase):
         game_setup.reset_boat_setup()
         matrix1 = utilities.create_matrix()
         for i in range(5):
-            matrix1[1][1+i] = 3
+            matrix1[1][1 + i] = 3
 
         matrix2 = utilities.create_matrix()
         self.assertEqual(game_setup.move_matrix, matrix1)

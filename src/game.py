@@ -2,9 +2,9 @@
     Code Description
 """
 import keyboard
-from utilities import clear_terminal, create_matrix, reset_matrix, random_boat_setup
-from config import boat_ammount, boat_lengths
-from board import Board
+from src.utilities import clear_terminal, create_matrix, reset_matrix, random_boat_setup
+from src.config import boat_ammount, boat_lengths
+from src.board import Board
 
 
 class GameSetup:

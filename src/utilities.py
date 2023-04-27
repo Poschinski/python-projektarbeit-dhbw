@@ -1,8 +1,6 @@
 import os
 import random
 
-from config import boat_lengths, boat_ammount
-
 
 def clear_terminal():
     if os.name == 'posix':  # for Mac and Linux
