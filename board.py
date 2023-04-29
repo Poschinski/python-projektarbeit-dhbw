@@ -131,7 +131,7 @@ class Board:
                 self.board2[row][col] = color_table.get(self.display_matrix[row][col], '')
 
 
-    def print_single_board(self, ammount):
+    def print_single_board(self, ammount, player_name):
         """
         Class Description
         """
@@ -144,6 +144,7 @@ class Board:
             if i == 0:
                 board_display += ' \n '
                 # print horizontal divider before column labels row
+                board_display += ' ' * 8 + f'{player_name}`s boat setup'.center(50) + ' ' * 24 + '\n'
                 board_display += '    ' + '-'*61 + '\n'
                 # print column labels row and first instruction
                 board_display += ' '.join(row) + '   ' + instructions[0] + '\n'
@@ -165,12 +166,10 @@ class Board:
                 boat_list_display += str(ammount[i]) + 'x ' + boat + ', '
         board_display += '\n' + boat_list_display + '\n'
         print(board_display)
-        # print(self.value_matrix)
-        # print(self.display_matrix)
 
 
 
-    def print_double_board(self):
+    def print_double_board(self, player_one, player_two):
         """
         Class Description
         """
@@ -178,8 +177,8 @@ class Board:
         for i, (row1, row2) in enumerate(zip(self.board1, self.board2)):
             if i == 0:
                 print(' \n ')
-                print(' ' * 8 + 'Player 1'.center(50) +
-                      ' ' * 24 + 'Player 2'.center(50))
+                print(' ' * 8 + f'{player_one}`s Board'.center(50) +
+                      ' ' * 24 + f'{player_two}`s Board'.center(50))
                 print(' ' * 5 + '-'*61 + ' ' * 13 + '-'*61)
                 print(' '.join(row1) + ' ' * 4 + ' '.join(row2))
             else:

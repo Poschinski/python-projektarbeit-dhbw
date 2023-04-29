@@ -6,7 +6,6 @@ import os
 import random
 
 
-
 def clear_terminal():
     """
     jsdnaskd
@@ -47,28 +46,28 @@ def does_not_overlap(matrix, row, col, length, direction):
     can_place = True
     for i in range(length+1):
         if direction == 'horizontal':
-            if col+i <= 10 and matrix[row][col] == 2:
+            if matrix[row][col] == 2:
                 can_place = False
             if col+i <= 10 and matrix[row][col+i] == 2:
                 can_place = False
             if col+i > 0 and matrix[row][col-1] == 2:
                 can_place = False
         elif direction == 'vertical':
-            if row+i <= 10 and matrix[row][col] == 2:
+            if matrix[row][col] == 2:
                 can_place = False
             if row+i <= 10 and matrix[row+i][col] == 2:
                 can_place = False
             if row+i > 0 and matrix[row-1][col] == 2:
                 can_place = False
-            if not can_place:
-                return False
+        if not can_place:
+            return False
     return True
 
 def does_not_touch_horizontal(matrix, row, col, length):
     """
     jsdnaskd
     """
-    for i in range(length+1):
+    for i in range(length+2):
         if row-1 > 0 and col+i <= 10 and matrix[row-1][col+i] == 2:
             return False
         if row+1 <= 10 and col+i <= 10 and matrix[row+1][col+i] == 2:
@@ -82,7 +81,7 @@ def does_not_touch_vertical(matrix, row, col, length):
     """
     jsdnaskd
     """
-    for i in range(length+1):
+    for i in range(length+2):
         if row+i <= 10 and col-1 > 0 and matrix[row+i][col-1] == 2:
             return False
         if row+i <= 10 and col+1 <= 10 and matrix[row+i][col+1] == 2:
@@ -197,6 +196,3 @@ def random_boat_setup():
         if attempts < 1000 and all([length == sum(row) for row in random_matrix] for length in lengths):
             break
     return random_matrix
-
-
-matrixx = random_boat_setup()

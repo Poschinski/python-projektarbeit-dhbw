@@ -2,6 +2,7 @@
     Code Description
 """
 import random
+import json
 import keyboard
 from utilities import clear_terminal, create_matrix, reset_matrix, random_boat_setup
 from board import Board
@@ -24,7 +25,7 @@ class GameSetup:
             self.move_matrix[1][1+i] = 3
 
 
-    def update_position(self, new_pos, changed_direction, boat_length):
+    def update_position(self, new_pos, changed_direction, boat_length, player_name):
         """
         Update the current boat position and display the changes on the board.
 
@@ -59,7 +60,7 @@ class GameSetup:
         self.current_pos = new_pos
         clear_terminal()
         self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-        self.board.print_single_board(self.ammount)
+        self.board.print_single_board(self.ammount, player_name)
 
     def add_boat_surrounding_horizontol(self, row, col, boat_length, i):
         """
@@ -121,7 +122,7 @@ class GameSetup:
         if row+boat_length <= 10 and col+1 <= 10:
             self.value_matrix[row+boat_length][col+1] = 1 #bottom right
 
-    def change_value(self, boat_length, direction):
+    def change_value(self, boat_length, direction, player_name):
         """
         Updates the value_matrix to indicate the new position of a boat.
 
@@ -150,10 +151,10 @@ class GameSetup:
                 self.add_boat_surrounding_vertical(row, col, boat_length, i)
         clear_terminal()
         self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-        self.board.print_single_board(self.ammount)
+        self.board.print_single_board(self.ammount, player_name)
         return True
 
-    def reset_boat_setup(self):
+    def reset_boat_setup(self, player_name):
         """
         Resets the boat setup to start again.
 
@@ -169,9 +170,9 @@ class GameSetup:
         self.direction = "horizontal"
         clear_terminal()
         self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-        self.board.print_single_board(self.ammount)
+        self.board.print_single_board(self.ammount, player_name)
 
-    def change_direction(self, length):
+    def change_direction(self, length, player_name):
         """
         Changes the current boat placement direction from horizontal to vertical
         or vice versa.
@@ -186,12 +187,12 @@ class GameSetup:
         changed_direction = True
         if self.direction == "horizontal":
             self.direction = "vertical"
-            self.update_position((self.current_pos[0], self.current_pos[1]),changed_direction, length)
+            self.update_position((self.current_pos[0], self.current_pos[1]),changed_direction, length, player_name)
         else:
             self.direction = "horizontal"
-            self.update_position((self.current_pos[0], self.current_pos[1]),changed_direction, length)
+            self.update_position((self.current_pos[0], self.current_pos[1]),changed_direction, length, player_name)
 
-    def handle_key_event_befor_placement(self, event, length, selected_boat):
+    def handle_key_event_befor_placement(self, event, length, selected_boat, player_name):
         """
         Handles the key events during the game.
 
@@ -203,21 +204,21 @@ class GameSetup:
         """
         changed_direction = False
         if event.name in ('up', 'nach-oben'):
-            self.update_position((self.current_pos[0]-1, self.current_pos[1]),changed_direction, length)
+            self.update_position((self.current_pos[0]-1, self.current_pos[1]),changed_direction, length, player_name)
         elif event.name in ('down', 'nach-unten'):
-            self.update_position((self.current_pos[0]+1, self.current_pos[1]),changed_direction, length)
+            self.update_position((self.current_pos[0]+1, self.current_pos[1]),changed_direction, length, player_name)
         elif event.name in ('left', 'nach-links'):
-            self.update_position((self.current_pos[0], self.current_pos[1]-1),changed_direction, length)
+            self.update_position((self.current_pos[0], self.current_pos[1]-1),changed_direction, length, player_name)
         elif event.name in ('right', 'nach-rechts'):
-            self.update_position((self.current_pos[0], self.current_pos[1]+1),changed_direction, length)
+            self.update_position((self.current_pos[0], self.current_pos[1]+1),changed_direction, length, player_name)
         elif event.name == 'enter':
-            if self.change_value(length, self.direction) is True:
+            if self.change_value(length, self.direction, player_name) is True:
                 self.ammount[selected_boat] -= 1
             clear_terminal()
             self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-            self.board.print_single_board(self.ammount)
+            self.board.print_single_board(self.ammount, player_name)
         elif event.name in ('shift', 'umschalt'):
-            self.change_direction(length)
+            self.change_direction(length, player_name)
         elif event.name == 'r':
             self.ammount = [1,2,3,4]
             self.value_matrix = random_boat_setup()
@@ -226,10 +227,10 @@ class GameSetup:
                 self.ammount[index] = 0
             clear_terminal()
             self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-            self.board.print_single_board(self.ammount)
+            self.board.print_single_board(self.ammount, player_name)
         elif event.name == 'esc':
             self.ammount = [1,2,3,4]
-            self.reset_boat_setup()
+            self.reset_boat_setup(player_name)
             return False, True
         elif event.name == 's':
             print("you still have boats to be placed!")
@@ -237,7 +238,7 @@ class GameSetup:
             return False, False
         return True, False
 
-    def handle_key_event_after_placement(self, event):
+    def handle_key_event_after_placement(self, event, player_name):
         """
         Method for handling key events after boat placement is complete.
         Args:
@@ -249,7 +250,7 @@ class GameSetup:
         """
         if event.name == 'esc':
             self.ammount = [1,2,3,4]
-            self.reset_boat_setup()
+            self.reset_boat_setup(player_name)
             return False, True
         if event.name == 's':
             return True, True
@@ -258,7 +259,7 @@ class GameSetup:
         return True, False
 
 
-    def setup_boats(self):
+    def setup_boats(self, player_name):
         """
         Method for setting up boats on the board.
 
@@ -268,10 +269,14 @@ class GameSetup:
         """
         selected_boat = 0
         lengths = [5,4,3,2]
+        self.ammount = [1,2,3,4]
+        return_val_one = True
+        return_val_two = False
         all_boats_placed = False
+        self.reset_boat_setup(player_name)
         clear_terminal()
         self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-        self.board.print_single_board(self.ammount)
+        self.board.print_single_board(self.ammount, player_name)
         while True:
             event = keyboard.read_event()
             all_boats_placed = all(amount == 0 for amount in self.ammount)
@@ -285,13 +290,13 @@ class GameSetup:
                 self.move_matrix = reset_matrix()
                 clear_terminal()
                 self.board.color_matrix_positions_boat_setup(self.move_matrix, self.value_matrix)
-                self.board.print_single_board(self.ammount)
+                self.board.print_single_board(self.ammount, player_name)
 
             if event.event_type == 'down':
                 if all_boats_placed is False:
-                    return_val_one, return_val_two = self.handle_key_event_befor_placement(event, length, selected_boat)
+                    return_val_one, return_val_two = self.handle_key_event_befor_placement(event, length, selected_boat, player_name)
                 else:
-                    return_val_one, return_val_two = self.handle_key_event_after_placement(event)
+                    return_val_one, return_val_two = self.handle_key_event_after_placement(event, player_name)
             if return_val_one:
                 if return_val_two: #True True
                     break
@@ -301,7 +306,6 @@ class GameSetup:
                     self.current_pos = [1,1]
                 else:       #False False
                     return False, None
-
         return True, self.value_matrix
 
 class Game:
@@ -317,7 +321,7 @@ class Game:
         self.miss = False
         self.is_bot = False
 
-    def handle_keyboard_event(self, matrix_one, matrix_two):
+    def handle_keyboard_event(self, matrix_one, matrix_two, player_names):
         """
         Handles a keyboard event for a player's turn in the game.
 
@@ -335,28 +339,28 @@ class Game:
         if event.event_type == 'down':
             if event.name in ('up', 'nach-oben') and self.miss is False:
                 direction = 'up'
-                self.move(matrix_one, matrix_two, direction)
+                self.move(matrix_one, matrix_two, direction, player_names)
 
             if event.name in ('down', 'nach-unten') and self.miss is False:
                 direction = 'down'
-                self.move(matrix_one, matrix_two, direction)
+                self.move(matrix_one, matrix_two, direction, player_names)
 
             if event.name in ('left', 'nach-links') and self.miss is False:
                 direction = 'left'
-                self.move(matrix_one, matrix_two, direction)
+                self.move(matrix_one, matrix_two, direction, player_names)
 
             if event.name in ('right', 'nach-rechts') and self.miss is False:
                 direction = 'right'
-                self.move(matrix_one, matrix_two, direction)
+                self.move(matrix_one, matrix_two, direction, player_names)
 
             if event.name == 'enter':
                 if self.confirm_key !='enter':
-                    hit = self.attack(matrix_one, matrix_two)
+                    hit = self.attack(matrix_one, matrix_two, player_names)
                     if hit:
                         print("hit!")
                     elif self.miss is True:
                         self.move_matrix = reset_matrix()
-                        board.color_matrix_positions_board_one(self.move_matrix, matrix_one)
+                        self.board.color_matrix_positions_board_one(self.move_matrix, matrix_one)
                         self.confirm_key = 'enter'
                         print('press enter again to finish you round')
                 else:
@@ -370,7 +374,7 @@ class Game:
                 return True ,False
         return False, False
 
-    def update_board(self, move_matrix, matrix_one, matrix_two):
+    def update_board(self, move_matrix, matrix_one, matrix_two, player_names):
         """
         Updates the colors of the board and prints the board
 
@@ -389,15 +393,15 @@ class Game:
         """
         clear_terminal()
         if self.is_bot:
-            board.color_matrix_positions_board_one(move_matrix, matrix_two)
-            board.color_matrix_positions_board_two(matrix_one)
-            board.print_double_board()
+            self.board.color_matrix_positions_board_one(move_matrix, matrix_two)
+            self.board.color_matrix_positions_board_two(matrix_one)
+            self.board.print_double_board(player_names['name_one'], player_names['name_two'])
         else:
-            board.color_matrix_positions_board_one(move_matrix, matrix_one)
-            board.color_matrix_positions_board_two(matrix_two)
-            board.print_double_board()
+            self.board.color_matrix_positions_board_one(move_matrix, matrix_one)
+            self.board.color_matrix_positions_board_two(matrix_two)
+            self.board.print_double_board(player_names['name_one'], player_names['name_two'])
 
-    def move(self, matrix_one, matrix_two, direction):
+    def move(self, matrix_one, matrix_two, direction, player_names):
         """
         Updates the player's cursor position on their board based on the given direction.
 
@@ -420,7 +424,7 @@ class Game:
                 self.move_matrix = reset_matrix()
                 self.move_matrix[row][col] = 3
                 self.current_pos = (row,col)
-                self.update_board(self.move_matrix, matrix_one, matrix_two)
+                self.update_board(self.move_matrix, matrix_one, matrix_two, player_names)
                 return
         if direction == 'down':
             row, col = (self.current_pos[0]+1, self.current_pos[1])
@@ -428,7 +432,7 @@ class Game:
                 self.move_matrix = reset_matrix()
                 self.move_matrix[row][col] = 3
                 self.current_pos = (row,col)
-                self.update_board(self.move_matrix, matrix_one, matrix_two)
+                self.update_board(self.move_matrix, matrix_one, matrix_two, player_names)
                 return
         if direction == 'left':
             row, col = (self.current_pos[0],self.current_pos[1]-1)
@@ -436,7 +440,7 @@ class Game:
                 self.move_matrix = reset_matrix()
                 self.move_matrix[row][col] = 3
                 self.current_pos = (row,col)
-                self.update_board(self.move_matrix, matrix_one, matrix_two)
+                self.update_board(self.move_matrix, matrix_one, matrix_two, player_names)
                 return
         if direction == 'right':
             row, col = (self.current_pos[0],self.current_pos[1]+1)
@@ -444,7 +448,7 @@ class Game:
                 self.move_matrix = reset_matrix()
                 self.move_matrix[row][col] = 3
                 self.current_pos = (row,col)
-                self.update_board(self.move_matrix, matrix_one, matrix_two)
+                self.update_board(self.move_matrix, matrix_one, matrix_two, player_names)
                 return
 
     def mark_destroyed_boat(self, matrix, row, col):
@@ -535,7 +539,7 @@ class Game:
         self.check_for_game_ending(value_matrix)
         return False
 
-    def attack(self, value_matrix, matrix_two):
+    def attack(self, value_matrix, matrix_two, player_names):
         """
         asdasd
         """
@@ -546,52 +550,102 @@ class Game:
         if value_matrix[row][col] == 0 or value_matrix[row][col] == 1:
             value_matrix[row][col] = 5
             self.miss = True
-            self.update_board(self.move_matrix, value_matrix, matrix_two)
+            self.update_board(self.move_matrix, value_matrix, matrix_two, player_names)
             return False
         if value_matrix[row][col] == 2:
             value_matrix[row][col] = 6
+            self.miss = False
             self.check_for_detroyed_boats(row, col, value_matrix)
-            self.update_board(self.move_matrix, value_matrix, matrix_two)
+            self.update_board(self.move_matrix, value_matrix, matrix_two, player_names)
             return True
         return False
 
-    def bot(self, matrix_player, matrix_bot):
+    def bot(self, matrix_player, matrix_bot, player_names):
         """
         Class Description
         """
         while self.miss is False:
             self.current_pos = [(random.randint(1,10)),(random.randint(1,10))]
-            print(self.current_pos)
-            self.attack(matrix_bot, matrix_player)
+            self.attack(matrix_bot, matrix_player, player_names)
         return True
+    def save_game(self, game_params, filename='game_params.json'):
+        """
+        Clear the existing game parameters in the JSON file at id 1 and save the provided game_params.
+        """
+        with open(filename, 'r') as file:
+            game_params_list = json.load(file)
 
-    def singleplayer(self, player_one_matrix):
+        # Find the game parameters with id 1
+        for params in game_params_list:
+            if params['id'] == 1:
+                # Clear the existing game parameters and replace them with the new ones
+                params.clear()
+                params.update(game_params)
+                break
+
+        # Save the updated game parameters to the file
+        with open(filename, 'w') as file:
+            json.dump(game_params_list, file)
+
+    def display_befor_round(self, option, player_one_name, player_two_name, player_one_turn, exit_game):
+        """
+        asdasd
+        """
+        if option == 0:
+            clear_terminal()
+            if player_one_turn:
+                print(f"{player_one_name} is starting! \nPress 'Enter' to show Boards")
+            else:
+                print(f"{player_two_name} is starting! \nPress 'Enter' to show Boards")
+
+            keyboard.wait('enter')
+            return
+        if option == 1:
+            if not self.win and not exit_game:
+                clear_terminal()
+                print(f"{player_two_name}`s turn! \nPress 'enter' to show Boards")
+                keyboard.wait('enter')
+                return
+        if option == 2:
+            if not self.win and not exit_game:
+                clear_terminal()
+                print(f"{player_one_name}`s turn! \nPress 'enter' to show Boards")
+                keyboard.wait('enter')
+                return
+
+
+    def singleplayer(self,player_one_name, player_two_name, player_two_matrix, player_one_matrix):
         """
         Class Description
         """
-        player_two_matrix = random_boat_setup()
         self.move_matrix[1][1] = 3
-        self.update_board(self.move_matrix, player_one_matrix, player_two_matrix)
-        player_one_turn = True
+        player_names = {
+            'name_one': player_one_name,
+            'name_two': player_two_name
+        }
+        self.update_board(self.move_matrix, player_one_matrix, player_two_matrix, player_names)
+        player_one_turn = random.randint(1,2)
         game_round = False
+        exit_game = False
+
 
         while True:
-            if player_one_turn:
+            if player_one_turn == 1:
                 self.move_matrix[1][1] = 3
                 self.is_bot = False
                 while game_round is False:
-                    self.update_board(self.move_matrix, player_one_matrix, player_two_matrix)
-                    game_round, exit_game = self.handle_keyboard_event(player_one_matrix, player_two_matrix)
-                player_one_turn = False
+                    self.update_board(self.move_matrix, player_one_matrix, player_two_matrix, player_names)
+                    game_round, exit_game = self.handle_keyboard_event(player_one_matrix, player_two_matrix, player_names)
+                player_one_turn = 1
                 game_round = False
                 self.miss = False
                 self.current_pos = (1,1)
             else:
                 while game_round is False:
                     self.is_bot = True
-                    self.update_board(self.move_matrix, player_two_matrix, player_one_matrix)
-                    game_round = self.bot(player_one_matrix, player_two_matrix)
-                player_one_turn = True
+                    self.update_board(self.move_matrix, player_two_matrix, player_one_matrix,player_names)
+                    game_round = self.bot(player_one_matrix, player_two_matrix, player_names)
+                player_one_turn = 2
                 game_round = False
                 self.miss = False
                 self.current_pos = (1,1)
@@ -600,58 +654,61 @@ class Game:
                 print("Game over!")
                 return True
             if exit_game:
+                game_params = {
+                    'gamemode': 1,
+                    'player_name_one': player_one_name,
+                    'player_name_two': player_two_name,
+                    'player_matrix_one': player_one_matrix,
+                    'player_matrix_two': player_two_matrix,
+                    'starting_player': player_one_turn
+                }
+                self.save_game(game_params)
                 break
 
-    def multiplayer(self, player_one_matrix, player_two_matrix):
+
+    def multiplayer(self, player_one_name, player_two_name, player_two_matrix, player_one_matrix):
         """
         asdasd
         """
         self.move_matrix[1][1] = 3
-        self.update_board(self.move_matrix, player_one_matrix, player_two_matrix)
-        player_one_turn = True
+        player_one_turn = random.choice([True, False])
         game_round = False
         exit_game = False
 
+        self.display_befor_round(0, player_one_name, player_two_name, player_one_turn, exit_game)
+
         while True:
             if player_one_turn:
+                player_names = {
+                    'name_one': player_two_name,
+                    'name_two': player_one_name
+                }
                 self.move_matrix[1][1] = 3
                 while game_round is False:
-                    self.update_board(self.move_matrix, player_one_matrix, player_two_matrix)
-                    game_round, exit_game = self.handle_keyboard_event(player_one_matrix, player_two_matrix)
+                    self.update_board(self.move_matrix, player_one_matrix, player_two_matrix, player_names)
+                    game_round, exit_game = self.handle_keyboard_event(player_one_matrix, player_two_matrix, player_names)
                 player_one_turn = False
                 game_round = False
                 self.miss = False
                 self.current_pos = (1,1)
+                self.display_befor_round(1, player_one_name, player_two_name, player_one_turn, exit_game)
             else:
+                player_names = {
+                    'name_one': player_one_name,
+                    'name_two': player_two_name
+                }
                 self.move_matrix[1][1] = 3
                 while game_round is False:
-                    self.update_board(self.move_matrix, player_two_matrix, player_one_matrix)
-                    game_round, exit_game = self.handle_keyboard_event(player_two_matrix, player_one_matrix)
+                    self.update_board(self.move_matrix, player_two_matrix, player_one_matrix, player_names)
+                    game_round, exit_game = self.handle_keyboard_event(player_two_matrix, player_one_matrix, player_names)
                 player_one_turn = True
                 game_round = False
                 self.miss = False
                 self.current_pos = (1,1)
+                self.display_befor_round(2, player_one_name, player_two_name, player_one_turn, exit_game)
 
             if self.win:
                 print("Game over!")
                 return True
             if exit_game:
                 return True
-
-
-
-game = GameSetup()
-matrix_onee = random_boat_setup()
-matrix_twoo = random_boat_setup()
-board = Board()
-
-
-teeest, teeeeeest = game.setup_boats()
-print(teeest, teeeeeest)
-
-
-
-
-# game = GameSetup()
-# TEST = game.setup_boats()
-# print(TEST)
