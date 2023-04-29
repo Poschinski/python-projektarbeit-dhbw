@@ -628,7 +628,6 @@ class Game:
         game_round = False
         exit_game = False
 
-
         while True:
             if player_one_turn == 1:
                 self.move_matrix[1][1] = 3
@@ -636,7 +635,7 @@ class Game:
                 while game_round is False:
                     self.update_board(self.move_matrix, player_one_matrix, player_two_matrix, player_names)
                     game_round, exit_game = self.handle_keyboard_event(player_one_matrix, player_two_matrix, player_names)
-                player_one_turn = 1
+                player_one_turn = 2
                 game_round = False
                 self.miss = False
                 self.current_pos = (1,1)
@@ -645,7 +644,8 @@ class Game:
                     self.is_bot = True
                     self.update_board(self.move_matrix, player_two_matrix, player_one_matrix,player_names)
                     game_round = self.bot(player_one_matrix, player_two_matrix, player_names)
-                player_one_turn = 2
+                    print(self.miss)
+                player_one_turn = 1
                 game_round = False
                 self.miss = False
                 self.current_pos = (1,1)
