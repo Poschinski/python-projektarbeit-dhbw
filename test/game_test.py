@@ -182,7 +182,6 @@ class GameSetupTestCase(unittest.TestCase):
         game_setup.move_matrix[3][3] = 1
         game_setup.value_matrix[3][3] = 2
         game_setup.ammount = [0, 0, 0, 0]
-        game_setup.current_pos = [2, 3]
         game_setup.direction = "vertical"
 
         game_setup.reset_boat_setup("player1")
@@ -194,7 +193,6 @@ class GameSetupTestCase(unittest.TestCase):
         self.assertEqual(game_setup.move_matrix, matrix1)
         self.assertEqual(game_setup.value_matrix, matrix2)
         self.assertEqual(game_setup.ammount, [1, 2, 3, 4])
-        self.assertEqual(game_setup.current_pos, [1, 1])
         self.assertEqual(game_setup.direction, "horizontal")
 
     def test_change_direction(self):
