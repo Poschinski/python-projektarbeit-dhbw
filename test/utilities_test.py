@@ -1,52 +1,94 @@
+"""""
+    Testing utilities.py
+    pylint:
+        disabling undefined-variable, wildcard-import, import-error
+        because imports work fine, but python doesn't recognise that.
+        Because imports are seen as wrong, functions of the import are also seen as undefined
+"""""
+#pylint: disable=C
+#pylint: disable=undefined-variable
+#pylint: disable=wildcard-import
+#pylint: disable=import-error
 import unittest
 import sys
-sys.path.append("..")
-import src.utilities as utilities
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+from utilities import *
 
 
-class MyTestCase(unittest.TestCase):
+class UtilitiesTestCase(unittest.TestCase):
+    """""
+        Testing various functions of utilities.py
+    """""
     def test_out_of_bounds_horizontal(self):
-        matrix = [[0] * 11 for _ in range(11)]
-        self.assertFalse(utilities.can_place_boat(matrix, 3, 8, 3, 'horizontal'))
+        """""
+            Tests the placement of a horizontal boat out of bounds
+        """""
+        matrix = create_matrix()
+        self.assertFalse(can_place_boat(matrix, 3, 8, 3, 'horizontal'))
 
     def test_out_of_bounds_vertical(self):
-        matrix = [[0] * 11 for _ in range(11)]
-        self.assertFalse(utilities.can_place_boat(matrix, 8, 3, 4, 'vertical'))
+        """""
+            Tests the placement of a vertical boat out of bounds
+        """""
+        matrix = create_matrix()
+        self.assertFalse(can_place_boat(matrix, 8, 3, 4, 'vertical'))
 
     def test_overlap_horizontal(self):
-        matrix = [[0] * 11 for _ in range(11)]
+        """""
+            Tests the placement of a overlapping horizontal boat
+        """""
+        matrix = create_matrix()
         matrix[3][5] = 2
         matrix[3][6] = 2
-        self.assertFalse(utilities.can_place_boat(matrix, 3, 4, 3, 'horizontal'))
+        self.assertFalse(can_place_boat(matrix, 3, 4, 3, 'horizontal'))
 
     def test_overlap_vertical(self):
-        matrix = [[0] * 11 for _ in range(11)]
+        """""
+            Tests the placement of a overlapping vertical boat
+        """""
+        matrix = create_matrix()
         matrix[2][2] = 2
         matrix[3][2] = 2
-        self.assertFalse(utilities.can_place_boat(matrix, 1, 2, 3, 'vertical'))
+        self.assertFalse(can_place_boat(matrix, 1, 2, 3, 'vertical'))
 
     def test_touching_horizontal(self):
-        matrix = [[0] * 11 for _ in range(11)]
+        """""
+            Tests the placement of a touching horizontal boat
+        """""
+        matrix = create_matrix()
         matrix[4][6] = 2
         matrix[3][7] = 2
-        self.assertFalse(utilities.can_place_boat(matrix, 4, 4, 4, 'horizontal'))
+        self.assertFalse(can_place_boat(matrix, 4, 4, 4, 'horizontal'))
 
     def test_touching_vertical(self):
-        matrix = [[0] * 11 for _ in range(11)]
+        """""
+            Tests the placement of a touching vertical boat
+        """""
+        matrix = create_matrix()
         matrix[3][3] = 2
         matrix[2][3] = 2
-        self.assertFalse(utilities.can_place_boat(matrix, 4, 4, 3, 'vertical'))
+        self.assertFalse(can_place_boat(matrix, 4, 4, 3, 'vertical'))
 
     def test_valid_horizontal(self):
-        matrix = [[0] * 11 for _ in range(11)]
-        self.assertTrue(utilities.can_place_boat(matrix, 3, 4, 3, 'horizontal'))
+        """""
+            Tests the placement of a horizontal boat
+        """""
+        matrix = create_matrix()
+        self.assertTrue(can_place_boat(matrix, 3, 4, 3, 'horizontal'))
 
     def test_valid_vertical(self):
-        matrix = [[0] * 11 for _ in range(11)]
-        self.assertTrue(utilities.can_place_boat(matrix, 5, 7, 2, 'vertical'))
+        """""
+            Tests the placement of a vertical boat
+        """""
+        matrix = create_matrix()
+        self.assertTrue(can_place_boat(matrix, 5, 7, 2, 'vertical'))
 
     def test_boat_overlap(self):
-        board = utilities.random_boat_setup()
+        """""
+            Tests if the random_boat_setup overlaps 
+        """""
+        board = random_boat_setup()
         for i in range(11):
             for j in range(11):
                 if board[i][j] == 2:
