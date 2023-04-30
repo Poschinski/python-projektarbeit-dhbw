@@ -33,7 +33,7 @@ class GameSetupTestCase(unittest.TestCase):
             using update_position, having a horizontal direction
         """""
         setup = GameSetup()
-        setup.update_position([2, 1], False, 2)
+        setup.update_position([2, 1], False, 2, "player1")
         self.assertEqual(setup.current_pos, [2, 1])
         self.assertEqual(setup.direction, "horizontal")
         matrix = create_matrix()
@@ -48,7 +48,7 @@ class GameSetupTestCase(unittest.TestCase):
         """""
         game = GameSetup()
         game.direction = "vertical"
-        game.update_position([1, 2], False, 2)
+        game.update_position([1, 2], False, 2, "player1")
         self.assertEqual(game.current_pos, [1, 2])
         self.assertEqual(game.direction, "vertical")
         matrix = create_matrix()
@@ -64,7 +64,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         game.direction = "horizontal"
         game.changed_direction = True
-        game.update_position((1, 9), game.changed_direction, 3)
+        game.update_position((1, 9), game.changed_direction, 3, "player1")
         self.assertEqual(game.direction, "vertical")
 
     def test_update_position_with_changed_direction_horizontal(self):
@@ -75,7 +75,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         game.direction = "vertical"
         game.changed_direction = True
-        game.update_position((9, 1), game.changed_direction, 3)
+        game.update_position((9, 1), game.changed_direction, 3, "player1")
         self.assertEqual(game.direction, "horizontal")
 
     def test_add_boat_surrounding_horizontal(self):
@@ -124,7 +124,7 @@ class GameSetupTestCase(unittest.TestCase):
         setup.value_matrix[1][1] = 1
         setup.current_pos = [1, 1]
         setup.direction = "horizontal"
-        self.assertFalse(setup.change_value(3, "horizontal"))
+        self.assertFalse(setup.change_value(3, "horizontal", "player1"))
 
     def test_change_value_returns_false_if_boat_overlap_vertical(self):
         """""
@@ -134,7 +134,7 @@ class GameSetupTestCase(unittest.TestCase):
         setup.value_matrix[1][1] = 1
         setup.current_pos = [1, 1]
         setup.direction = "vertical"
-        self.assertFalse(setup.change_value(3, "vertical"))
+        self.assertFalse(setup.change_value(3, "vertical", "player1"))
 
     def test_change_value_updates_value_matrix_horizontal(self):
         """""
@@ -143,7 +143,7 @@ class GameSetupTestCase(unittest.TestCase):
         setup = GameSetup()
         setup.current_pos = [1, 1]
         setup.direction = "horizontal"
-        self.assertTrue(setup.change_value(3, "horizontal"))
+        self.assertTrue(setup.change_value(3, "horizontal", "player1"))
         expected_value_matrix = create_matrix()
         expected_value_matrix[1][1] = 2
         expected_value_matrix[1][2] = 2
@@ -162,7 +162,7 @@ class GameSetupTestCase(unittest.TestCase):
         setup = GameSetup()
         setup.current_pos = [1, 1]
         setup.direction = "vertical"
-        self.assertTrue(setup.change_value(3, "vertical"))
+        self.assertTrue(setup.change_value(3, "vertical", "player1"))
         expected_value_matrix = create_matrix()
         expected_value_matrix[1][1] = 2
         expected_value_matrix[1][2] = 1
@@ -185,7 +185,7 @@ class GameSetupTestCase(unittest.TestCase):
         game_setup.current_pos = [2, 3]
         game_setup.direction = "vertical"
 
-        game_setup.reset_boat_setup()
+        game_setup.reset_boat_setup("player1")
         matrix1 = create_matrix()
         for i in range(5):
             matrix1[1][1 + i] = 3
@@ -236,7 +236,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "up"
         game.current_pos = [2, 1]
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (1, 1))
 
     def test_handle_key_event_before_placement_up_boarder(self):
@@ -246,7 +246,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "up"
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [1, 1])
 
     def test_handle_key_event_before_placement_down(self):
@@ -256,7 +256,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "down"
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (2, 1))
 
     def test_handle_key_event_before_placement_down_boarder(self):
@@ -267,7 +267,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "down"
         game.current_pos = [9, 9]
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [9, 9])
 
     def test_handle_key_event_before_placement_left(self):
@@ -278,7 +278,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "left"
         game.current_pos = [1, 2]
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (1, 1))
 
     def test_handle_key_event_before_placement_left_boarder(self):
@@ -288,7 +288,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "left"
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [1, 1])
 
     def test_handle_key_event_before_placement_right(self):
@@ -298,7 +298,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "right"
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (1, 2))
 
     def test_handle_key_event_before_placement_right_boarder(self):
@@ -309,7 +309,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "right"
         game.current_pos = [1, 9]
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [1, 9])
 
     def test_handle_key_event_before_placement_shift(self):
@@ -320,7 +320,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "shift"
         # game.current_pos = [9, 9]
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.direction, "vertical")
 
     def test_handle_key_event_before_placement_r(self):
@@ -330,7 +330,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "r"
-        game.handle_key_event_befor_placement(event, 3, 0)
+        game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(game.ammount, [0, 0, 0, 0])
 
     def test_handle_key_event_before_placement_esc(self):
@@ -340,7 +340,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "esc"
-        result = game.handle_key_event_befor_placement(event, 3, 0)
+        result = game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(result, (False, True))
 
     def test_handle_key_event_before_placement_s(self):
@@ -351,7 +351,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "s"
         with patch("builtins.print") as mock_print:
-            game.handle_key_event_befor_placement(event, 3, 0)
+            game.handle_key_event_befor_placement(event, 3, 0, "player1")
             mock_print.assert_called_with("you still have boats to be placed!")
 
     def test_handle_key_event_before_placement_b(self):
@@ -361,7 +361,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "b"
-        result = game.handle_key_event_befor_placement(event, 3, 0)
+        result = game.handle_key_event_befor_placement(event, 3, 0, "player1")
         self.assertEqual(result, (False, False))
 
     def test_handle_key_event_after_placement_esc(self):
@@ -371,7 +371,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "esc"
-        result = game.handle_key_event_after_placement(event)
+        result = game.handle_key_event_after_placement(event, "player1")
         self.assertEqual(result, (False, True))
 
     def test_handle_key_event_after_placement_s(self):
@@ -381,7 +381,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "s"
-        result = game.handle_key_event_after_placement(event)
+        result = game.handle_key_event_after_placement(event, "player1")
         self.assertEqual(result, (True, True))
 
     def test_handle_key_event_after_placement_b(self):
@@ -391,7 +391,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "b"
-        result = game.handle_key_event_after_placement(event)
+        result = game.handle_key_event_after_placement(event, "player1")
         self.assertEqual(result, (False, False))
 
     def test_handle_key_event_after_placement_other(self):
@@ -401,7 +401,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "other"
-        result = game.handle_key_event_after_placement(event)
+        result = game.handle_key_event_after_placement(event, "player1")
         self.assertEqual(result, (True, False))
 
 class GameTestCase(unittest.TestCase):
@@ -425,7 +425,7 @@ class GameTestCase(unittest.TestCase):
         with patch.object(game.board, 'color_matrix_positions_board_one', return_value=None) as mock_color_one, \
                 patch.object(game.board, 'color_matrix_positions_board_two', return_value=None) as mock_color_two, \
                 patch.object(game.board, 'print_double_board', return_value=None) as mock_print:
-            game.update_board(move_matrix, matrix_one, matrix_two)
+            game.update_board(move_matrix, matrix_one, matrix_two, {"name_one": "player1", "name_two": "player2"})
             mock_clear.assert_called()
             mock_color_one.assert_called_with(move_matrix, matrix_one)
             mock_color_two.assert_called_with(matrix_two)
@@ -449,7 +449,7 @@ class GameTestCase(unittest.TestCase):
         with patch.object(game.board, 'color_matrix_positions_board_one', return_value=None) as mock_color_one, \
                 patch.object(game.board, 'color_matrix_positions_board_two', return_value=None) as mock_color_two, \
                 patch.object(game.board, 'print_double_board', return_value=None) as mock_print:
-            game.update_board(move_matrix, matrix_one, matrix_two)
+            game.update_board(move_matrix, matrix_one, matrix_two, {"name_one": "player1", "name_two": "player2"})
             mock_clear.assert_called()
             mock_color_one.assert_called_with(move_matrix, matrix_two)
             mock_color_two.assert_called_with(matrix_one)
@@ -464,7 +464,7 @@ class GameTestCase(unittest.TestCase):
         matrix_two = create_matrix()
         game.current_pos = (2, 5)
         game.move_matrix = create_matrix()
-        game.move(matrix_one, matrix_two, "up")
+        game.move(matrix_one, matrix_two, "up", {"name_one": "player1", "name_two": "player2"})
         self.assertEqual(game.current_pos, (1, 5))
         self.assertEqual(game.move_matrix[1][5], 3)
 
@@ -477,7 +477,7 @@ class GameTestCase(unittest.TestCase):
         matrix_two = create_matrix()
         game.current_pos = (9, 5)
         game.move_matrix = create_matrix()
-        game.move(matrix_one, matrix_two, "down")
+        game.move(matrix_one, matrix_two, "down", {"name_one": "player1", "name_two": "player2"})
         self.assertEqual(game.current_pos, (10, 5))
         self.assertEqual(game.move_matrix[10][5], 3)
 
@@ -490,7 +490,7 @@ class GameTestCase(unittest.TestCase):
         matrix_two = create_matrix()
         game.current_pos = (5, 2)
         game.move_matrix = create_matrix()
-        game.move(matrix_one, matrix_two, "left")
+        game.move(matrix_one, matrix_two, "left", {"name_one": "player1", "name_two": "player2"})
         self.assertEqual(game.current_pos, (5, 1))
         self.assertEqual(game.move_matrix[5][1], 3)
 
@@ -503,7 +503,7 @@ class GameTestCase(unittest.TestCase):
         matrix_two = create_matrix()
         game.current_pos = (5, 9)
         game.move_matrix = create_matrix()
-        game.move(matrix_one, matrix_two, "right")
+        game.move(matrix_one, matrix_two, "right", {"name_one": "player1", "name_two": "player2"})
         self.assertEqual(game.current_pos, (5, 10))
         self.assertEqual(game.move_matrix[5][10], 3)
 
@@ -612,7 +612,7 @@ class GameTestCase(unittest.TestCase):
         value_matrix = create_matrix()
         matrix_two = create_matrix()
         game.current_pos = [0, 0]
-        self.assertFalse(game.attack(value_matrix, matrix_two))
+        self.assertFalse(game.attack(value_matrix, matrix_two, {"name_one": "player1", "name_two": "player2"}))
         self.assertTrue(game.miss)
 
     def test_attack_hit(self):
@@ -624,7 +624,7 @@ class GameTestCase(unittest.TestCase):
         matrix_two = create_matrix()
         value_matrix[0][0] = 2
         game.current_pos = [0, 0]
-        self.assertTrue(game.attack(value_matrix, matrix_two))
+        self.assertTrue(game.attack(value_matrix, matrix_two, {"name_one": "player1", "name_two": "player2"}))
         self.assertFalse(game.miss)
 
     def test_attack_already_attacked(self):
@@ -636,7 +636,7 @@ class GameTestCase(unittest.TestCase):
         matrix_two = create_matrix()
         value_matrix[0][0] = 5
         game.current_pos = [0, 0]
-        self.assertFalse(game.attack(value_matrix, matrix_two))
+        self.assertFalse(game.attack(value_matrix, matrix_two, {"name_one": "player1", "name_two": "player2"}))
         self.assertFalse(game.miss)
 
 

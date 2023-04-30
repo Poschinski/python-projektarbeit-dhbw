@@ -170,6 +170,7 @@ class GameSetup:
             self.move_matrix[1][1+i] = 3
         self.direction = "horizontal"
         self.ammount = [1, 2, 3, 4]
+        self.current_pos = [1, 1]
         clear_terminal()
         self.board.color_matrix_positions_boat_setup(
             self.move_matrix, self.value_matrix)
