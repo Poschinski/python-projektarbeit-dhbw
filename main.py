@@ -3,9 +3,11 @@ dasd
 """
 import sys
 import json
-from game import GameSetup, Game
-from menu import Menu
-from utilities import clear_terminal, random_boat_setup
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+from src.menu import Menu
+from src.game import GameSetup, Game
+from src.utilities import *
 
 class Main():
     """
@@ -95,6 +97,6 @@ class Main():
             self.play.multiplayer(game_params['player_name_one'], game_params['player_name_two'],
                                 game_params['player_matrix_one'], game_params['player_matrix_two'])
 
-# main = Main()
-# while True:
-#     main.handle_main_menu()
+main = Main()
+while True:
+    main.handle_main_menu()

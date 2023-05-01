@@ -5,13 +5,14 @@
         because imports work fine, but python doesn't recognise that.
         Because imports are seen as wrong, functions of the import are also seen as undefined
 """""
-#pylint: disable=C
-#pylint: disable=undefined-variable
-#pylint: disable=wildcard-import
-#pylint: disable=import-error
+# pylint: disable=C
+# pylint: disable=undefined-variable
+# pylint: disable=wildcard-import
+# pylint: disable=import-error
 import unittest
 import sys
 import os
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 from board import *
 
@@ -20,6 +21,7 @@ class BoardTests(unittest.TestCase):
     """""
         Testing various functions of board.py
     """""
+
     def test_color_matrix_positions_boat_setup(self):
         """""
             Testing if matrix colors are corresponding with the boats

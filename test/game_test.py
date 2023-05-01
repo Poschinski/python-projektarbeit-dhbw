@@ -8,15 +8,16 @@
         disabling too-many-public-methods
         because can't have too many methods in a TestCase
 """""
-#pylint: disable=C
-#pylint: disable=undefined-variable
-#pylint: disable=wildcard-import
-#pylint: disable=import-error
-#pylint: disable=too-many-public-methods
+# pylint: disable=C
+# pylint: disable=undefined-variable
+# pylint: disable=wildcard-import
+# pylint: disable=import-error
+# pylint: disable=too-many-public-methods
 import unittest
 from unittest.mock import MagicMock, patch
 import sys
 import os
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 from game import *
 from utilities import *
@@ -402,10 +403,12 @@ class GameSetupTestCase(unittest.TestCase):
         result = game.handle_key_event_after_placement(event, "player1")
         self.assertEqual(result, (True, False))
 
+
 class GameTestCase(unittest.TestCase):
     """""
         Testing various functions of Game class
     """""
+
     @patch('game.clear_terminal')
     def test_update_board(self, mock_clear):
         """""
@@ -578,29 +581,6 @@ class GameTestCase(unittest.TestCase):
         expected_matrix[6][5] = 5
         expected_matrix[6][4] = 5
         self.assertEqual(value_matrix, expected_matrix)
-
-    # def test_check_for_destroyed_boats(self):
-    #     game = Game()
-    #     value_matrix = create_matrix()
-    #     value_matrix[1][1] = 2
-    #     value_matrix[1][2] = 7
-    #     value_matrix[1][3] = 2
-    #     value_matrix[2][2] = 7
-    #     value_matrix[3][2] = 7
-    #
-    #     # Check for destroyed boat
-    #     self.assertTrue(game.check_for_detroyed_boats(1, 2, value_matrix))
-    #
-    #     # Check for game ending
-    #     value_matrix[4][4] = 2
-    #     value_matrix[5][4] = 7
-    #     value_matrix[6][4] = 2
-    #     value_matrix[7][4] = 7
-    #     value_matrix[8][4] = 2
-    #     self.assertTrue(game.check_for_detroyed_boats(5, 4, value_matrix))
-    #
-    #     # Check for boat not destroyed
-    #     self.assertFalse(game.check_for_detroyed_boats(1, 1, value_matrix))
 
     def test_attack_miss(self):
         """""
