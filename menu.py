@@ -4,7 +4,7 @@ sadd
 from utilities import clear_terminal
 class Menu:
     """
-    sadd
+    Class for Menu handle and displaying
     """
     def __init__(self):
         self.option_input = ""
@@ -12,9 +12,9 @@ class Menu:
 
     def main_menu(self):
         """
-        sadd
+        This function displays a main menu with three options: singleplayer, multiplayer, and exit game.
+        It then waits for the user to input a valid option and returns the user's input.
         """
-        first_loop_round = True
         self.option_input = ""
         while self.option_input not in ("1", "2", "3"):
             clear_terminal()
@@ -22,10 +22,6 @@ class Menu:
             print("1. Singleplayer")
             print("2. Multiplayer")
             print("3. Exit Game")
-            if first_loop_round is False:
-                print("Invalid input. Please try again.")
-            else:
-                first_loop_round = False
             self.option_input = input("\nEnter your choice: ")
         clear_terminal()
         return self.option_input
@@ -34,9 +30,9 @@ class Menu:
 
     def game_menu(self):
         """
-        sadd
+        This function displays a game menu with three options: starting a new game, loading a saved game, or returning to the main menu.
+        It prompts the user to enter their choice and returns it.
         """
-        first_loop_round = True
         self.option_input = ""
         while self.option_input not in ("1", "2", "3"):
             clear_terminal()
@@ -44,17 +40,15 @@ class Menu:
             print("1. New Game")
             print("2. Load Game")
             print("3. Back to Main Menu")
-            if first_loop_round is False:
-                print("Invalid input. Please try again.")
-            else:
-                first_loop_round = False
             self.option_input = input("\nEnter your choice: ")
         clear_terminal()
         return self.option_input
 
     def enter_player_name(self, player):
         """
-        sadd
+        This function prompts the user to enter a player name and returns the name as a string.
+        It also validates that the name entered contains at least 3 characters.
+        The function takes in an integer parameter "player" to determine if it is player 1 or player 2 entering their name.
         """
         self.name_input = ""
         if player == 1:
