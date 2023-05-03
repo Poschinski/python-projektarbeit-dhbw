@@ -1,18 +1,25 @@
 """
-dasd
+    Main
 """
+# pylint: disable=undefined-variable
+# pylint: disable=wildcard-import
+# pylint: disable=import-error
 import sys
 import json
 import os
+import time
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
-from src.menu import Menu
 from src.game import GameSetup, Game
-from src.utilities import *
+from src.menu import Menu
+from src.utilities import random_boat_setup
 
-class Main():
+
+
+class Main:
     """
-    dasd
+    Class for combining the other classes to a playable game.
     """
+
     def __init__(self):
         self.play = Game()
         self.game_setup = GameSetup()
@@ -20,7 +27,8 @@ class Main():
 
     def handle_main_menu(self):
         """
-        dasd
+        This function handles the main menu of the game and based on the user's input,
+        it calls the appropriate function to handle the game menu or exits the game.
         """
         player_input = self.menu.main_menu()
         if player_input == "1":
@@ -29,12 +37,11 @@ class Main():
             self.handle_game_menu(2)
         if player_input == "3":
             sys.exit()
-        else:
-            print("ELSE")
 
     def handle_game_menu(self, gamemode):
         """
-        dasd
+        handles the user input for the game menu and calls appropriate functions based on the user's choice.
+        It can start a new game, load a saved game, or exit the game.
         """
         player_input = self.menu.game_menu()
         if player_input == "1":
@@ -48,11 +55,14 @@ class Main():
 
     def start_new_game(self, gamemode):
         """
-        dasd
+        This function starts a new game based on the selected game mode.
+        It prompts the user(s) to enter their names and set up their boats on their game boards.
+        It then initializes the game parameters and starts the game
         """
         if gamemode == 1:
             player_name_one = self.menu.enter_player_name(1)
-            check, player_matrix_one = self.game_setup.setup_boats(player_name_one)
+            check, player_matrix_one = self.game_setup.setup_boats(
+                player_name_one)
             if check is False:
                 return False
             player_name_two = "Bot"
@@ -60,10 +70,12 @@ class Main():
         if gamemode == 2:
             player_name_one = self.menu.enter_player_name(1)
             player_name_two = self.menu.enter_player_name(2)
-            check, player_matrix_one = self.game_setup.setup_boats(player_name_one)
+            check, player_matrix_one = self.game_setup.setup_boats(
+                player_name_one)
             if check is False:
                 return False
-            check, player_matrix_two = self.game_setup.setup_boats(player_name_two)
+            check, player_matrix_two = self.game_setup.setup_boats(
+                player_name_two)
             if check is False:
                 return False
         game_params = {
@@ -79,12 +91,29 @@ class Main():
 
     def load_game(self, gamemode):
         """
-        dasd
+        Load saved game data for the specified game mode from the JSON file and return as a dictionary.
+        If no saved game data is found, print 'No saved game found' and return an empty dictionary.
         """
-
-
-
-
+        try:
+            with open('save.json', 'r', encoding='utf-8') as file:
+                game_data_list = json.load(file)
+            for game_data in game_data_list:
+                if game_data['gamemode'] == gamemode:
+                    self.start_game(game_data)
+                    return
+        except FileNotFoundError:
+            print('No saved game found')
+            time.sleep(1)
+            return
+        except json.JSONDecodeError:
+            print('Saved game file is empty or corrupted')
+            time.sleep(2)
+            return
+        finally:
+            if game_data_list == '[]':
+                print("No saved Game found")
+                time.sleep(1)
+        return
 
     def start_game(self, game_params):
         """
@@ -92,11 +121,20 @@ class Main():
         """
         if game_params['gamemode'] == 1:
             self.play.singleplayer(game_params['player_name_one'], game_params['player_name_two'],
-                                game_params['player_matrix_one'], game_params['player_matrix_two'])
+                                   game_params['player_matrix_two'], game_params['player_matrix_one'])
         elif game_params['gamemode'] == 2:
             self.play.multiplayer(game_params['player_name_one'], game_params['player_name_two'],
-                                game_params['player_matrix_one'], game_params['player_matrix_two'])
+                                  game_params['player_matrix_one'], game_params['player_matrix_two'])
 
-main = Main()
-while True:
-    main.handle_main_menu()
+    def main(self):
+        """
+        This function is the main loop of the game.
+        It continuously calls the handle_main_menu() function until the game is exited.
+        """
+        while True:
+            self.handle_main_menu()
+
+
+if __name__ == '__main__':
+    main = Main()
+    main.main()

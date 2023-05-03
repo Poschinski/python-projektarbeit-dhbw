@@ -1,8 +1,11 @@
 """
-    Code Description
+    Game
 """
+# pylint: disable=import-error
 import random
 import json
+import time
+
 import keyboard
 from utilities import clear_terminal, create_matrix, reset_matrix, random_boat_setup
 from board import Board
@@ -10,7 +13,7 @@ from board import Board
 
 class GameSetup:
     """
-    Class Description
+    Class for creating boat setups.
     """
 
     def __init__(self):
@@ -27,15 +30,6 @@ class GameSetup:
     def update_position(self, new_pos, changed_direction, boat_length, player_name):
         """
         Update the current boat position and display the changes on the board.
-
-        Args:
-            new_pos (tuple): The new position to update the boat position to, as a tuple (row, col).
-            changed_direction (bool): True if the boat direction has changed, False otherwise.
-            boat_length (int): The length of the current boat being placed.
-
-        Returns:
-            None
-
         """
         length = boat_length
         row, col = new_pos
@@ -62,18 +56,9 @@ class GameSetup:
             self.move_matrix, self.value_matrix)
         self.board.print_single_board(self.ammount, player_name)
 
-    def add_boat_surrounding_horizontol(self, row, col, boat_length, i):
+    def add_boat_surrounding_horizontal(self, row, col, boat_length, i):
         """
         Update value_matrix by marking the surrounding positions of a boat that is placed horizontally.
-
-        Parameters:
-        row (int): The row index of the boat's starting position.
-        col (int): The column index of the boat's starting position.
-        boat_length (int): The length of the boat.
-        i (int): The index of the boat's position.
-
-        Returns:
-        None
         """
         if row+1 <= 10 and col+i <= 10:
             self.value_matrix[row+1][col+i] = 1  # bottom line
@@ -95,15 +80,6 @@ class GameSetup:
     def add_boat_surrounding_vertical(self, row, col, boat_length, i):
         """
         Update the value matrix with the surrounding values for a vertical boat
-
-        Parameters:
-        row (int): The row index of the starting position of the boat
-        col (int): The column index of the starting position of the boat
-        boat_length (int): The length of the boat to be added
-        i (int): The current index being updated in the boat
-
-        Returns:
-        None
         """
         if row+i <= 10 and col-1 > 0:
             self.value_matrix[row+i][col-1] = 1  # left line
@@ -125,14 +101,6 @@ class GameSetup:
     def change_value(self, boat_length, direction, player_name):
         """
         Updates the value_matrix to indicate the new position of a boat.
-
-        Args:
-            boat_length (int): The length of the boat being moved.
-            direction (str): The direction in which the boat is being moved. Must be either "horizontal" or "vertical".
-
-        Returns:
-            bool: True if the boat was successfully placed in the new position, False otherwise.
-
         """
         row, col = self.current_pos
         if direction == "horizontal":
@@ -141,7 +109,7 @@ class GameSetup:
                     return False
             for i in range(boat_length):
                 self.value_matrix[row][col+i] = 2
-                self.add_boat_surrounding_horizontol(row, col, boat_length, i)
+                self.add_boat_surrounding_horizontal(row, col, boat_length, i)
         else:
             for i in range(boat_length):
                 if self.value_matrix[row+i][col] == 1 or self.value_matrix[row+i][col] == 2:
@@ -158,11 +126,6 @@ class GameSetup:
     def reset_boat_setup(self, player_name):
         """
         Resets the boat setup to start again.
-
-        Resets the value_matrix and move_matrix to their initial values, places
-        the first boat in the move_matrix, and resets the all_boats_placed and
-        direction instance variables. Clears the terminal, updates the
-        color_matrix_positions_boat_setup, and prints the board.
         """
         self.value_matrix = reset_matrix()
         self.move_matrix = reset_matrix()
@@ -179,12 +142,6 @@ class GameSetup:
         """
         Changes the current boat placement direction from horizontal to vertical
         or vice versa.
-
-        Args:
-            length (int): The length of the boat being placed.
-
-        Returns:
-            None
         """
 
         changed_direction = True
@@ -197,15 +154,9 @@ class GameSetup:
             self.update_position(
                 (self.current_pos[0], self.current_pos[1]), changed_direction, length, player_name)
 
-    def handle_key_event_befor_placement(self, event, length, selected_boat, player_name):
+    def handle_key_event_before_placement(self, event, length, selected_boat, player_name):
         """
         Handles the key events during the game.
-
-        Parameters:
-            event (keyboard.KeyboardEvent): A keyboard event.
-
-        Returns:
-            bool: True if the game is over, False otherwise.
         """
         changed_direction = False
         if event.name in ('up', 'nach-oben'):
@@ -251,12 +202,6 @@ class GameSetup:
     def handle_key_event_after_placement(self, event, player_name):
         """
         Method for handling key events after boat placement is complete.
-        Args:
-            event (keyboard.KeyboardEvent): the keyboard event to handle
-        Returns:
-            bool or None: Returns True if 's' key is pressed and all boats have been placed,
-                        False if 'b' key is pressed to go back to boat placement,
-                        None otherwise.
         """
         if event.name == 'esc':
             self.ammount = [1, 2, 3, 4]
@@ -271,10 +216,6 @@ class GameSetup:
     def setup_boats(self, player_name):
         """
         Method for setting up boats on the board.
-
-        Returns:
-        - False if the game should be terminated
-        - True if the boat setup is complete and the game should start
         """
         selected_boat = 0
         lengths = [5, 4, 3, 2]
@@ -305,7 +246,7 @@ class GameSetup:
 
             if event.event_type == 'down':
                 if all_boats_placed is False:
-                    return_val_one, return_val_two = self.handle_key_event_befor_placement(
+                    return_val_one, return_val_two = self.handle_key_event_before_placement(
                         event, length, selected_boat, player_name)
                 else:
                     return_val_one, return_val_two = self.handle_key_event_after_placement(
@@ -324,7 +265,7 @@ class GameSetup:
 
 class Game:
     """
-    asdasd
+    Class for the game logic during the game.
     """
 
     def __init__(self):
@@ -339,15 +280,6 @@ class Game:
     def handle_keyboard_event(self, matrix_one, matrix_two, player_names):
         """
         Handles a keyboard event for a player's turn in the game.
-
-        Args:
-            matrix_one (list): A matrix representing the first player's board
-            matrix_two (list): A matrix representing the second player's board
-
-        Returns:
-            A tuple of two boolean values. The first value indicates whether the player's
-            turn has ended (True) or not (False). The second value indicates whether the
-            game should end (True) or not (False).
         """
         event = keyboard.read_event()
         direction = ''
@@ -393,19 +325,6 @@ class Game:
     def update_board(self, move_matrix, matrix_one, matrix_two, player_names):
         """
         Updates the colors of the board and prints the board
-
-        Functions:
-            board.color_matrix_positions_board_one()
-            board.color_matrix_positions_board_two()
-            board.print_double_board
-
-        Args:
-            move_matrix (list of litst)
-            matrix_one (list of lists)
-            matrix_two (list of lists)
-
-        Returns:
-            None
         """
         clear_terminal()
         if self.is_bot:
@@ -424,19 +343,6 @@ class Game:
     def move(self, matrix_one, matrix_two, direction, player_names):
         """
         Updates the player's cursor position on their board based on the given direction.
-
-        Functions:
-            reset_matrix()
-            self.update_board()
-
-        Args:
-            matrix_one (list): The player's board matrix.
-            matrix_two (list): The opponent's board matrix.
-            direction (str): The direction to move the cursor. Can be 'up', 'down', 'left', or 'right'.
-
-        Returns:
-            None
-
         """
         if direction == 'up':
             row, col = (self.current_pos[0]-1, self.current_pos[1])
@@ -479,9 +385,6 @@ class Game:
         """
         Given a matrix, the row and column of a destroyed boat,
         mark all other positions of the boat with 7 without going out of index.
-
-        Args:
-            matrix (list of list)
         """
         # check if the boat is vertical or horizontal
         if matrix[row][col] == 7 and ((row-1 >= 0 and matrix[row-1][col] == 6) or (row+1 <= 9 and matrix[row+1][col] == 6)):
@@ -490,7 +393,7 @@ class Game:
             while start_row > 0 and matrix[start_row-1][col] == 6:
                 start_row -= 1
             end_row = row
-            while end_row < 9 and matrix[end_row+1][col] == 6:
+            while end_row < 10 and matrix[end_row+1][col] == 6:
                 end_row += 1
             for i in range(start_row, end_row+1):
                 matrix[i][col] = 7
@@ -500,14 +403,14 @@ class Game:
             while start_col > 0 and matrix[row][start_col-1] == 6:
                 start_col -= 1
             end_col = col
-            while end_col < 9 and matrix[row][end_col+1] == 6:
+            while end_col < 10 and matrix[row][end_col+1] == 6:
                 end_col += 1
             for j in range(start_col, end_col+1):
                 matrix[row][j] = 7
 
     def check_for_game_ending(self, value_matrix):
         """
-        kasmdmads
+        checks if there are still undestroyed boats on the board
         """
         for row in range(11):
             for col in range(11):
@@ -518,7 +421,7 @@ class Game:
 
     def mark_destroyed_boat_surrounding(self, value_matrix):
         """
-        kasmdmads
+        marks the surrounding of a destroyed boat in the matrix
         """
         for row in range(11):
             for col in range(11):
@@ -540,21 +443,32 @@ class Game:
                     if col-1 > 0 and value_matrix[row][col-1] != 7:
                         value_matrix[row][col-1] = 5
 
-    def check_for_detroyed_boats(self, row, col, value_matrix):
+    def check_for_destroyed_boats(self, row, col, value_matrix):
         """
-        asdasd
+        checks if a boat is destroyed
         """
-        if row-1 > 0:
-            if value_matrix[row-1][col] == 2:
+        # Find the starting and ending positions of the boat in the same row.
+        start_col = col
+        while start_col > 0 and value_matrix[row][start_col - 1] in (2, 6):
+            start_col -= 1
+        end_col = col
+        while end_col < 10 and value_matrix[row][end_col + 1] in (2, 6):
+            end_col += 1
+
+        # Find the starting and ending positions of the boat in the same column.
+        start_row = row
+        while start_row > 0 and value_matrix[start_row - 1][col] in (2, 6):
+            start_row -= 1
+        end_row = row
+        while end_row < 10 and value_matrix[end_row + 1][col] in (2, 6):
+            end_row += 1
+
+        # Check if all the positions between the starting and ending positions have been hit.
+        for i in range(start_col, end_col + 1):
+            if value_matrix[row][i] == 2:
                 return False
-        if row+1 <= 10:
-            if value_matrix[row+1][col] == 2:
-                return False
-        if col-1 > 0:
-            if value_matrix[row][col-1] == 2:
-                return False
-        if col+1 <= 10:
-            if value_matrix[row][col+1] == 2:
+        for i in range(start_row, end_row + 1):
+            if value_matrix[i][col] == 2:
                 return False
         value_matrix[row][col] = 7
         self.mark_destroyed_boat(value_matrix, row, col)
@@ -564,7 +478,7 @@ class Game:
 
     def attack(self, value_matrix, matrix_two, player_names):
         """
-        asdasd
+        function for attacking the enemy with the position of the cursor
         """
         row, col = (self.current_pos[0], self.current_pos[1])
         if value_matrix[row][col] == 5 or value_matrix[row][col] == 6:
@@ -579,7 +493,7 @@ class Game:
         if value_matrix[row][col] == 2:
             value_matrix[row][col] = 6
             self.miss = False
-            self.check_for_detroyed_boats(row, col, value_matrix)
+            self.check_for_destroyed_boats(row, col, value_matrix)
             self.update_board(self.move_matrix, value_matrix,
                               matrix_two, player_names)
             return True
@@ -587,7 +501,7 @@ class Game:
 
     def bot(self, matrix_player, matrix_bot, player_names):
         """
-        Class Description
+        function for bot playing the game
         """
         while self.miss is False:
             self.current_pos = [(random.randint(1, 10)),
@@ -595,28 +509,64 @@ class Game:
             self.attack(matrix_bot, matrix_player, player_names)
         return True
 
-    def save_game(self, game_params, filename='game_params.json'):
+    def save_game(self, gamemode, game_params, filename='save.json'):
         """
         Clear the existing game parameters in the JSON file at id 1 and save the provided game_params.
         """
-        with open(filename, 'r') as file:
-            game_params_list = json.load(file)
+        try:
+            with open(filename, 'r', encoding='utf-8') as file:
+                game_params_list = json.load(file)
+        except json.decoder.JSONDecodeError:
+            # If the file is empty or invalid JSON, create an empty list of game parameters
+            game_params_list = []
 
-        # Find the game parameters with id 1
+            # Find the game parameters with id 1
         for params in game_params_list:
-            if params['id'] == 1:
+            if params['gamemode'] == 1 and gamemode == 1:
                 # Clear the existing game parameters and replace them with the new ones
                 params.clear()
                 params.update(game_params)
                 break
+            if params['gamemode'] == 2 and gamemode == 2:
+                # Clear the existing game parameters and replace them with the new ones
+                params.clear()
+                params.update(game_params)
+                break
+        else:
+            # If no game parameters with id 1 were found, add the new parameters to the list
+            game_params_list.append(game_params)
 
-        # Save the updated game parameters to the file
-        with open(filename, 'w') as file:
+            # Save the updated game parameters to the file
+        with open(filename, 'w', encoding='utf-8') as file:
+            json.dump(game_params_list, file)
+            print("Saved")
+            time.sleep(1)
+
+    def delete_save(self, gamemode, filename='save.json'):
+        """""
+            Deletes saved game after the game is finished
+        """""
+        try:
+            with open(filename, 'r', encoding='utf-8') as file:
+                game_params_list = json.load(file)
+        except json.decoder.JSONDecodeError:
+            # If the file is empty or invalid JSON, create an empty list of game parameters
+            game_params_list = []
+
+        for params in game_params_list:
+            if params['gamemode'] == gamemode:
+                game_params_list.remove(params)
+                print(f"Removed game parameters for gamemode {gamemode}")
+                break
+        else:
+            print(f"No game parameters found for gamemode {gamemode}")
+
+        with open(filename, 'w', encoding='utf-8') as file:
             json.dump(game_params_list, file)
 
     def display_text(self, option, player_names, player_one_turn, exit_game):
         """
-        asdasd
+        displays which user starts the game and waits for enter to be pressed
         """
         if option == 0:
             clear_terminal()
@@ -653,7 +603,7 @@ class Game:
 
     def singleplayer(self, player_one_name, player_two_name, player_two_matrix, player_one_matrix):
         """
-        Class Description
+        function for playing singleplayer with the given args
         """
         self.move_matrix[1][1] = 3
         player_names = {
@@ -693,8 +643,11 @@ class Game:
                 self.current_pos = (1, 1)
 
             if self.win:
+                self.win = False
                 print("Game over!")
-                return True
+                time.sleep(1)
+                self.delete_save(1)
+                return
             if exit_game:
                 game_params = {
                     'gamemode': 1,
@@ -704,12 +657,16 @@ class Game:
                     'player_matrix_two': player_two_matrix,
                     'starting_player': player_one_turn
                 }
-                self.save_game(game_params)
+                self.save_game(1, game_params)
+                print("Saved")
+                time.sleep(1)
                 break
+
+
 
     def multiplayer(self, player_one_name, player_two_name, player_two_matrix, player_one_matrix):
         """
-        asdasd
+        function for playing multiplayer with the given args
         """
         self.move_matrix[1][1] = 3
         player_one_turn = random.choice([True, False])
@@ -738,7 +695,8 @@ class Game:
                 game_round = False
                 self.miss = False
                 self.current_pos = (1, 1)
-                self.display_text(1, player_names, player_one_turn, exit_game)
+                if exit_game is False:
+                    self.display_text(1, player_names, player_one_turn, exit_game)
             else:
                 player_names = {
                     'name_one': player_one_name,
@@ -754,11 +712,25 @@ class Game:
                 game_round = False
                 self.miss = False
                 self.current_pos = (1, 1)
-                self.display_text(2, player_names, player_one_turn, exit_game)
+                if exit_game is False:
+                    self.display_text(2, player_names, player_one_turn, exit_game)
 
             if self.win:
                 print("Game over!")
+                time.sleep(1)
+                self.delete_save(2)
                 self.display_text(3, player_names, player_one_turn, exit_game)
-                return True
+                self.win = False
+                return
             if exit_game:
-                return True
+                game_params = {
+                    'gamemode': 2,
+                    'player_name_one': player_one_name,
+                    'player_name_two': player_two_name,
+                    'player_matrix_one': player_one_matrix,
+                    'player_matrix_two': player_two_matrix,
+                    'starting_player': player_one_turn
+                }
+                self.save_game(2, game_params)
+                time.sleep(1)
+                break

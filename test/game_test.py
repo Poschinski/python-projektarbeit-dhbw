@@ -86,7 +86,7 @@ class GameSetupTestCase(unittest.TestCase):
         """""
         game = GameSetup()
         game.value_matrix = create_matrix()
-        game.add_boat_surrounding_horizontol(5, 5, 3, 0)
+        game.add_boat_surrounding_horizontal(5, 5, 3, 0)
         expected_matrix = create_matrix()
         expected_matrix[6][4] = 1  # bottom line
         expected_matrix[4][4] = 1  # top line
@@ -216,7 +216,7 @@ class GameSetupTestCase(unittest.TestCase):
         game.move_matrix = create_matrix()
         event = MagicMock()
         event.name = "enter"
-        result = game.handle_key_event_befor_placement(event, 5, 0, "player1")
+        result = game.handle_key_event_before_placement(event, 5, 0, "player1")
         matrix = create_matrix()
         for i in range(5):
             matrix[1][1 + i] = 2
@@ -235,7 +235,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "up"
         game.current_pos = [2, 1]
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (1, 1))
 
     def test_handle_key_event_before_placement_up_boarder(self):
@@ -245,7 +245,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "up"
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [1, 1])
 
     def test_handle_key_event_before_placement_down(self):
@@ -255,7 +255,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "down"
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (2, 1))
 
     def test_handle_key_event_before_placement_down_boarder(self):
@@ -266,7 +266,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "down"
         game.current_pos = [9, 9]
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [9, 9])
 
     def test_handle_key_event_before_placement_left(self):
@@ -277,7 +277,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "left"
         game.current_pos = [1, 2]
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (1, 1))
 
     def test_handle_key_event_before_placement_left_boarder(self):
@@ -287,7 +287,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "left"
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [1, 1])
 
     def test_handle_key_event_before_placement_right(self):
@@ -297,7 +297,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "right"
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, (1, 2))
 
     def test_handle_key_event_before_placement_right_boarder(self):
@@ -308,7 +308,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "right"
         game.current_pos = [1, 9]
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.current_pos, [1, 9])
 
     def test_handle_key_event_before_placement_shift(self):
@@ -319,7 +319,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "shift"
         # game.current_pos = [9, 9]
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.direction, "vertical")
 
     def test_handle_key_event_before_placement_r(self):
@@ -329,7 +329,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "r"
-        game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(game.ammount, [0, 0, 0, 0])
 
     def test_handle_key_event_before_placement_esc(self):
@@ -339,7 +339,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "esc"
-        result = game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        result = game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(result, (False, True))
 
     def test_handle_key_event_before_placement_s(self):
@@ -350,7 +350,7 @@ class GameSetupTestCase(unittest.TestCase):
         event = MagicMock()
         event.name = "s"
         with patch("builtins.print") as mock_print:
-            game.handle_key_event_befor_placement(event, 3, 0, "player1")
+            game.handle_key_event_before_placement(event, 3, 0, "player1")
             mock_print.assert_called_with("you still have boats to be placed!")
 
     def test_handle_key_event_before_placement_b(self):
@@ -360,7 +360,7 @@ class GameSetupTestCase(unittest.TestCase):
         game = GameSetup()
         event = MagicMock()
         event.name = "b"
-        result = game.handle_key_event_befor_placement(event, 3, 0, "player1")
+        result = game.handle_key_event_before_placement(event, 3, 0, "player1")
         self.assertEqual(result, (False, False))
 
     def test_handle_key_event_after_placement_esc(self):

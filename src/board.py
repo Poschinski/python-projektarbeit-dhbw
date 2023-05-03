@@ -1,11 +1,11 @@
 """
-    Code Description
+    Board
 """
 
 
 class Board:
     """
-    Class Description
+    Class for creating, changing and displaying Game Boards.
     """
 
     def __init__(self):
@@ -20,7 +20,7 @@ class Board:
 
     def add_column_labels(self):
         """
-        Class Description
+        This function adds the column Labels to the Board
         """
         for i, label in enumerate(['    ', '|  A ', '|  B ', '|  C ', '|  D ', '|  E ', '|  F ', '|  G ', '|  H ', '|  I ', '|  J  |']):
             self.board1[0][i] = label
@@ -31,7 +31,8 @@ class Board:
     # color = light blue
     def add_row_labels_and_color(self, color='\u001b[94;106m'):
         """
-        Class Description
+        This function adds the row labels to the Board and is also creating a 10x10 Game Board,
+        with a light blue and the ~ character for displaying water.
         """
         for i in range(1, 11):
             # pad single-digit labels with leading zero
@@ -47,7 +48,9 @@ class Board:
 
     def color_matrix_positions_boat_setup(self, move_matrix, value_matrix):
         """
-        Class Description
+        This function gets the move_matrix and the value_matrix.
+        Those two functions combined are creating a third matrix called display_matrix.
+        The display_matrix is for updating the colors of the board 1.
         """
         grey_dark='\u001b[48;5;240m'
         blue='\u001b[94;106m'
@@ -75,7 +78,9 @@ class Board:
 
     def color_matrix_positions_board_one(self, move_matrix, value_matrix):
         """
-        Class Description
+        This function gets the move_matrix and the value_matrix.
+        Those two functions combined are creating a third matrix called display_matrix.
+        The display_matrix is for updating the colors of the board 1.
         """
         grey_dark='\u001b[48;5;240m'
         grey_light='\u001b[48;5;247m'
@@ -109,7 +114,9 @@ class Board:
 
     def color_matrix_positions_board_two(self, value_matrix):
         """
-        Class Description
+        This function gets the move_matrix and the value_matrix.
+        Those two functions combined are creating a third matrix called display_matrix.
+        The display_matrix is for updating the colors of the board 2.
         """
         grey_dark='\u001b[48;5;240m'
         grey_light='\u001b[48;5;247m'
@@ -133,10 +140,10 @@ class Board:
 
     def print_single_board(self, ammount, player_name):
         """
-        Class Description
+        Function for printing the board 1 in the Terminal.
         """
         instructions = ["Use", "'Arrow keys' to move the boat,", "'Shift' to rotate the boat,",
-                        "'Enter' to place the boat,", "'R' for random boat setup,", "'Esc' to reset,", "'S' to save,", "'B' to go back.", ""]
+                        "'Enter' to place the boat,", "'R' for random boat setup,", "'Esc' to reset,", "'S' to save and continue,", "'B' to go back.", ""]
         boat_list = ['Battleship (5)', 'Cruiser (4)',
                      'Destroyer (3)', 'Submarine (2)']
         board_display = ''
@@ -171,7 +178,7 @@ class Board:
 
     def print_double_board(self, player_one, player_two):
         """
-        Class Description
+        Function for printing 2 Boards in the Terminal
         """
         instructions = ["Use", "'Arrow keys' to move,", "'enter' to attack,", "'enter' to end round,", "'esc' for save and exit", ""]
         for i, (row1, row2) in enumerate(zip(self.board1, self.board2)):
